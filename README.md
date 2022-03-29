@@ -1,2 +1,2 @@
 # NetworkMessengerClient
-Client for Network Messenger App
+Server for Network Messenger App
