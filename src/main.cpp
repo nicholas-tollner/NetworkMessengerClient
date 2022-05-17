@@ -96,8 +96,8 @@ int main(int argc, char *argv[]) {
 
     printf("Bytes Sent: %ld\n", iResult);
 
-    // shutdown the connection for sending since no more data will be sent
-    // the client can still use the ConnectSocket for receiving data
+    // Shutdown the connection for sending
+    // Can still receive on connectSocket
     iResult = shutdown(connectSocket, SD_SEND);
     if (iResult == SOCKET_ERROR) {
         printf("shutdown failed: %d\n", WSAGetLastError());
@@ -109,13 +109,25 @@ int main(int argc, char *argv[]) {
     // Receive data until the server closes the connection
     do {
         iResult = recv(connectSocket, recvbuf, recvbuflen, 0);
-        if (iResult > 0)
+        if (iResult > 0) {
             printf("Bytes received: %d\n", iResult);
+
+            // Print out recvbuf to console
+            for (int i = 0; i < iResult; i++) {
+                std::cout << recvbuf[i];
+            }
+            std::cout << "\n";
+        }
         else if (iResult == 0)
+        {
             printf("Connection closed\n");
-        else
+        } else {
             printf("recv failed: %d\n", WSAGetLastError());
+        }
     } while (iResult > 0);
+
+
+
 
     // Shutdown the send half of the connection since no more data will be sent
     iResult = shutdown(connectSocket, SD_SEND);
