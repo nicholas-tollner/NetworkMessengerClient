@@ -7,7 +7,7 @@
 #define DEFAULT_BUFLEN 256
 
 int main(int argc, char *argv[]) {
-    std::cout << "Client starting ...";
+    std::cout << "Client starting ... ";
 
     int recvbuflen = DEFAULT_BUFLEN;
 
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    std::cout << "Connected!" << std::endl;
+    std::cout << "Connected!\n" << std::endl;
 
     std::cout << "Enter Message: " << std::endl;
 
