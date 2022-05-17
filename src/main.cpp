@@ -122,6 +122,8 @@ int main(int argc, char *argv[]) {
         std::cout << "\nWaiting for input .." << std::endl;
     }
 
+    // Code below is ignored, loop needs to check server is still connected
+
     // Shutdown the connection for sending
     // Can still receive on connectSocket
     iResult = shutdown(connectSocket, SD_SEND);
@@ -131,9 +133,6 @@ int main(int argc, char *argv[]) {
         WSACleanup();
         return 1;
     }
-
-
-
 
     // Shutdown the send half of the connection since no more data will be sent
     iResult = shutdown(connectSocket, SD_SEND);
