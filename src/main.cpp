@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
             printf("recv failed: %d\n", WSAGetLastError());
     } while (iResult > 0);
 
-    // shutdown the send half of the connection since no more data will be sent
+    // Shutdown the send half of the connection since no more data will be sent
     iResult = shutdown(connectSocket, SD_SEND);
     if (iResult == SOCKET_ERROR) {
         printf("shutdown failed: %d\n", WSAGetLastError());
