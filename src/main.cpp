@@ -11,11 +11,13 @@ int main(int argc, char *argv[]) {
 
     int recvbuflen = DEFAULT_BUFLEN;
 
-    const char* sendbuf = argv[2];
+    const char *sendbuf;
     char recvbuf[DEFAULT_BUFLEN];
 
     WSADATA wsaData;
     int iResult;
+
+    std::string input;
 
     struct addrinfo *result = NULL;
     struct addrinfo *ptr = NULL;
@@ -30,9 +32,8 @@ int main(int argc, char *argv[]) {
      * MAKEWORD requests version 2.2 of Winsock
      * If iResult != 0, WSAStartup has failed
      */
-    iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
-    if (iResult != 0)
-    {
+    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (iResult != 0) {
         printf("WSAStartup failed: %d\n", iResult);
         return 1;
     }
@@ -46,15 +47,14 @@ int main(int argc, char *argv[]) {
 
     // Request IP address of server from command line
     iResult = getaddrinfo(argv[1], DEFAULT_PORT, &hints, &result);
-    if (iResult != 0)
-    {
+    if (iResult != 0) {
         printf("getaddrinfo failed: %d\n", iResult);
         WSACleanup();
         return 1;
     }
 
     // Point to result addrinfo struct
-    ptr=result;
+    ptr = result;
 
     // Setup socket to use for connection to server
     connectSocket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Connect to server
-    iResult = connect( connectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+    iResult = connect(connectSocket, ptr->ai_addr, (int) ptr->ai_addrlen);
 
     // Check if connection was successful
     if (iResult == SOCKET_ERROR) {
@@ -85,16 +85,42 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // Send initial buffer to server
-    iResult = send(connectSocket, sendbuf, (int) strlen(sendbuf), 0);
-    if (iResult == SOCKET_ERROR) {
-        printf("send failed: %d\n", WSAGetLastError());
-        closesocket(connectSocket);
-        WSACleanup();
-        return 1;
-    }
+    std::cout << "Waiting for input .." << std::endl;
 
-    printf("Bytes Sent: %ld\n", iResult);
+    // Read input from console and send to server
+    while(std::getline(std::cin, input)) {
+        sendbuf = input.data();
+
+        // Send input to server
+        iResult = send(connectSocket, sendbuf, (int) strlen(sendbuf), 0);
+        if (iResult == SOCKET_ERROR) {
+            printf("send failed: %d\n", WSAGetLastError());
+            closesocket(connectSocket);
+            WSACleanup();
+            return 1;
+        }
+
+        printf("Bytes Sent: %ld, ", iResult);
+
+        // Receive data until the server closes the connection
+        iResult = recv(connectSocket, recvbuf, recvbuflen, 0);
+        if (iResult > 0) {
+            printf("Bytes received: %d\n", iResult);
+
+            std::cout << "Echoed: ";
+            // Print out recvbuf to console
+            for (int i = 0; i < iResult; i++) {
+                std::cout << recvbuf[i];
+            }
+            std::cout << "\n";
+        } else if (iResult == 0) {
+            printf("Connection closed\n");
+        } else {
+            printf("recv failed: %d\n", WSAGetLastError());
+        }
+
+        std::cout << "\nWaiting for input .." << std::endl;
+    }
 
     // Shutdown the connection for sending
     // Can still receive on connectSocket
@@ -105,26 +131,6 @@ int main(int argc, char *argv[]) {
         WSACleanup();
         return 1;
     }
-
-    // Receive data until the server closes the connection
-    do {
-        iResult = recv(connectSocket, recvbuf, recvbuflen, 0);
-        if (iResult > 0) {
-            printf("Bytes received: %d\n", iResult);
-
-            // Print out recvbuf to console
-            for (int i = 0; i < iResult; i++) {
-                std::cout << recvbuf[i];
-            }
-            std::cout << "\n";
-        }
-        else if (iResult == 0)
-        {
-            printf("Connection closed\n");
-        } else {
-            printf("recv failed: %d\n", WSAGetLastError());
-        }
-    } while (iResult > 0);
 
 
 
