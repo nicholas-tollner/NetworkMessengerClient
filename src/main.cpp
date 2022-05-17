@@ -7,7 +7,7 @@
 #define DEFAULT_BUFLEN 256
 
 int main(int argc, char *argv[]) {
-    std::cout << "Client starting ... \n" << std::endl;
+    std::cout << "Client starting ...";
 
     int recvbuflen = DEFAULT_BUFLEN;
 
@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
      */
     iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (iResult != 0) {
-        printf("WSAStartup failed: %d\n", iResult);
+        printf("\nWSAStartup failed: %d\n", iResult);
         return 1;
     }
 
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
     // Request IP address of server from command line
     iResult = getaddrinfo(argv[1], DEFAULT_PORT, &hints, &result);
     if (iResult != 0) {
-        printf("getaddrinfo failed: %d\n", iResult);
+        printf("\ngetaddrinfo failed: %d\n", iResult);
         WSACleanup();
         return 1;
     }
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
 
     // Check connectSocket is now setup correctly
     if (connectSocket == INVALID_SOCKET) {
-        printf("Error at socket(): %ld\n", WSAGetLastError());
+        printf("\nError at socket(): %ld\n", WSAGetLastError());
         freeaddrinfo(result);
         WSACleanup();
         return 1;
@@ -80,24 +80,29 @@ int main(int argc, char *argv[]) {
 
     // Check if connection failed
     if (connectSocket == INVALID_SOCKET) {
-        printf("Unable to connect to server!\n");
+        printf("\nUnable to connect to server!\n");
         WSACleanup();
         return 1;
     }
 
-    std::cout << "Waiting for input .." << std::endl;
+    std::cout << "Connected!" << std::endl;
+
+    std::cout << "Enter Message: " << std::endl;
 
     // Read input from console and send to server
     while(std::getline(std::cin, input)) {
+
+        // Exit loop if user enters QUIT
+        if (input == "QUIT")
+        {
+            break;
+        }
 
         // Truncate message length to 512 characters
         if (input.length() > DEFAULT_BUFLEN) {
             input = input.substr(0, DEFAULT_BUFLEN);
         }
-
         sendbuf = input.data();
-
-        std::cout << strlen(sendbuf) << std::endl;
 
         // Send input to server
         iResult = send(connectSocket, sendbuf, (int) strlen(sendbuf), 0);
@@ -127,23 +132,11 @@ int main(int argc, char *argv[]) {
             printf("recv failed: %d\n", WSAGetLastError());
         }
 
-        std::cout << "\nWaiting for input .." << std::endl;
+        std::cout << "\nEnter Message: " << std::endl;
     }
 
-    // Code below is ignored, loop needs to check server is still connected
-
-    // Shutdown the connection for sending
-    // Can still receive on connectSocket
-    iResult = shutdown(connectSocket, SD_SEND);
-    if (iResult == SOCKET_ERROR) {
-        printf("shutdown failed: %d\n", WSAGetLastError());
-        closesocket(connectSocket);
-        WSACleanup();
-        return 1;
-    }
-
-    // Shutdown the send half of the connection since no more data will be sent
-    iResult = shutdown(connectSocket, SD_SEND);
+    // Shutdown the connection for sending and receiving
+    iResult = shutdown(connectSocket, SD_BOTH);
     if (iResult == SOCKET_ERROR) {
         printf("shutdown failed: %d\n", WSAGetLastError());
         closesocket(connectSocket);
@@ -155,5 +148,6 @@ int main(int argc, char *argv[]) {
     closesocket(connectSocket);
     WSACleanup();
 
+    std::cout << "Connection Closed!" << std::endl;
     return 0;
 }
