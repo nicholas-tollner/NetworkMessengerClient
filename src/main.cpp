@@ -4,10 +4,10 @@
 #include <stdio.h>
 
 #define DEFAULT_PORT "54321"
-#define DEFAULT_BUFLEN 512
+#define DEFAULT_BUFLEN 256
 
 int main(int argc, char *argv[]) {
-    std::cout << "Client starting ... " << std::endl;
+    std::cout << "Client starting ... \n" << std::endl;
 
     int recvbuflen = DEFAULT_BUFLEN;
 
@@ -89,7 +89,15 @@ int main(int argc, char *argv[]) {
 
     // Read input from console and send to server
     while(std::getline(std::cin, input)) {
+
+        // Truncate message length to 512 characters
+        if (input.length() > DEFAULT_BUFLEN) {
+            input = input.substr(0, DEFAULT_BUFLEN);
+        }
+
         sendbuf = input.data();
+
+        std::cout << strlen(sendbuf) << std::endl;
 
         // Send input to server
         iResult = send(connectSocket, sendbuf, (int) strlen(sendbuf), 0);
