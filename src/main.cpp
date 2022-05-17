@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
 
     int recvbuflen = DEFAULT_BUFLEN;
 
-    const char* sendbuf = "test";
+    const char* sendbuf = argv[2];
     char recvbuf[DEFAULT_BUFLEN];
 
     WSADATA wsaData;
