@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 project(NetworkMessenger VERSION 1.0)
 
 # Sources
-set(source_files src/main.cpp)
+set(source_files src/main.cpp src/Client.cpp)
 
 # Build
 add_executable(${CMAKE_PROJECT_NAME} ${source_files})
