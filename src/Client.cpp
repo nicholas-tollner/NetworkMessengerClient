@@ -111,7 +111,7 @@ int Client::sendData() {
             WSACleanup();
             return 1;
         }
-        printf("Bytes Sent: %ld, ", iResult);
+        //printf("Bytes Sent: %ld, ", iResult);
     }
 }
 
@@ -120,10 +120,9 @@ int Client::receiveData() {
         // Receive data until the server closes the connection
         iResult = recv(connectSocket, recvbuf, recvbuflen, 0);
         if (iResult > 0) {
-            printf("Bytes received: %d\n", iResult);
+            // Prints message received from server to console
+            //printf("Bytes received: %d\n", iResult);
 
-            std::cout << "Echoed: ";
-            // Print out recvbuf to console
             for (int i = 0; i < iResult; i++) {
                 std::cout << recvbuf[i];
             }
