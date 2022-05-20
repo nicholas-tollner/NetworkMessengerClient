@@ -15,6 +15,8 @@
 class Client {
 public:
     Client(const char *ip);
+    Client(std::string ip);
+
     ~Client();
 
     int init();

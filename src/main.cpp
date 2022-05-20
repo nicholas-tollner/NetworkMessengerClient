@@ -9,11 +9,24 @@
 #define DEFAULT_BUFLEN 256
 
 Client *client = nullptr;
+std::string input;
 
 int main(int argc, char *argv[]) {
     std::cout << "Client starting ... ";
 
-    client = new Client(argv[1]);
+    // Check if IP has been passed as program argument
+    if (argc > 1)
+    {
+        client = new Client(argv[1]);
+    } else
+    {
+        std::cout << "\nEnter IP to connect: " << std::endl;
+        std::cin >> input;
+        client = new Client(input);
+    }
+
+
+    std::cout << "Input: " << input << std::endl;
 
     if (client->init() != 0)
     {

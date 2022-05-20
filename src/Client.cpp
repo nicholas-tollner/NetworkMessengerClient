@@ -12,6 +12,11 @@ Client::Client(const char *ip)
     this->ip = ip;
 }
 
+Client::Client(std::string ip)
+{
+    this->ip = ip.c_str();
+}
+
 int Client::init()
 {
     // Initialise Winsock
@@ -111,7 +116,6 @@ int Client::sendData() {
             WSACleanup();
             return 1;
         }
-        //printf("Bytes Sent: %ld, ", iResult);
     }
 }
 
@@ -120,9 +124,6 @@ int Client::receiveData() {
         // Receive data until the server closes the connection
         iResult = recv(connectSocket, recvbuf, recvbuflen, 0);
         if (iResult > 0) {
-            // Prints message received from server to console
-            //printf("Bytes received: %d\n", iResult);
-
             for (int i = 0; i < iResult; i++) {
                 std::cout << recvbuf[i];
             }
